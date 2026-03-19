@@ -1,204 +1,119 @@
 import os
+from colorama import Fore, init
+
+init(autoreset=True)
 
 lista_dicionarios = [
-{
-"nome_produto": "roupa de borracha feminino",
-"cod_produto": "001",
-"tipo": "vestuario",
-"quantidade_estoque": "10",
-"preco": "1299",
-"detalhes": "roupa de borracha da marca ripcurl tamanho M",
-"fornecedor": "RipCurl"
-},
-{
-"nome_produto": "prancha de surf 6.0",
-"cod_produto": "002",
-"tipo": "equipamento",
-"quantidade_estoque": "5",
-"preco": "2500",
-"detalhes": "prancha de surf epoxy tamanho 6.0",
-"fornecedor": "SurfTech"
-},
-{
-"nome_produto": "leash surf 6 pés",
-"cod_produto": "003",
-"tipo": "acessorio",
-"quantidade_estoque": "45",
-"preco": "120",
-"detalhes": "leash resistente para pranchas até 6 pés",
-"fornecedor": "FCS"
-},
-{
-"nome_produto": "parafina para prancha",
-"cod_produto": "004",
-"tipo": "acessorio",
-"quantidade_estoque": "80",
-"preco": "25",
-"detalhes": "parafina para agua tropical",
-"fornecedor": "Sticky Bumps"
-},
-{
-"nome_produto": "bermuda surf masculina",
-"cod_produto": "005",
-"tipo": "vestuario",
-"quantidade_estoque": "30",
-"preco": "220",
-"detalhes": "bermuda elastano para surf",
-"fornecedor": "Quiksilver"
-},
-{
-"nome_produto": "camiseta uv surf",
-"cod_produto": "006",
-"tipo": "vestuario",
-"quantidade_estoque": "60",
-"preco": "180",
-"detalhes": "camiseta proteção UV fator 50",
-"fornecedor": "RipCurl"
-}
+    {
+        "nome_produto": "Camisa de borracha feminina",
+        "cod_produto": "001",
+        "tipo": "vestuario",
+        "quantidade_estoque": "10",
+        "preco": "1299",
+        "detalhes": "Roupa de borracha da marca ripcurl tamanho M",
+        "fornecedor": "RipCurl"
+    }
 ]
 
-
-def voltar_ao_menu_principal():
-    from main import voltar_ao_menu_principal as _voltar
-    _voltar()
-
+def limpar_tela():
+    os.system("cls" if os.name == "nt" else "clear")
 
 def exibir_subtitulo(texto):
-    os.system("cls")
-    print(texto)
-    print()
+    limpar_tela()
+    print(Fore.CYAN + f"\n=== {texto.upper()} ===\n")
 
+def voltar_ao_menu_principal():
+    from main import voltar_ao_menu_principal as voltar
+    voltar()
 
 def finalizar_app():
-    exibir_subtitulo("finalizando o app")
-
+    print(Fore.MAGENTA + "\n👋 Finalizando o sistema... Até logo!\n")
 
 def estoque_adicionar_produto():
+    exibir_subtitulo("Cadastro de Produtos")
 
-    exibir_subtitulo("cadastro de produtos")
+    nome = input("Nome do produto: ").strip()
+    if not nome:
+        print(Fore.RED + "Nome não pode ser vazio!")
+        return voltar_ao_menu_principal()
 
-    nome_produto = input("digite o nome do produto que deseja cadastrar: ")
+    categoria = input("Categoria (vestuario / calcado / acessorio): ").lower()
 
-    if not nome_produto.strip():
-        print("erro: o nome do produto não pode estar vazio")
-        voltar_ao_menu_principal()
-        return
+    if categoria not in ["vestuario", "calcado", "acessorio"]:
+        print(Fore.RED + "Categoria inválida!")
+        return voltar_ao_menu_principal()
 
-    print(f"o produto {nome_produto} foi cadastrado com sucesso")
-
-    while True:
-
-        categoria = input(f"digite o nome da categoria do produto {nome_produto} - escolha entre vestuario, calcado ou acessorio: ")
-
-        if categoria == "vestuario":
-            break
-
-        elif categoria == "calcado":
-            break
-
-        elif categoria == "acessorio":
-            break
-
-        else:
-            print("digite uma categoria válida")
-
-    dados_do_produto = {
-        "nome_produto": nome_produto,
-        "cod_produto": "000",
+    novo_produto = {
+        "nome_produto": nome,
+        "cod_produto": str(len(lista_dicionarios) + 1).zfill(3),
         "tipo": categoria,
         "quantidade_estoque": "0",
-        "preco": "0",
-        "detalhes": "",
-        "fornecedor": ""
+        "preco": "0"
     }
 
-    lista_dicionarios.append(dados_do_produto)
+    lista_dicionarios.append(novo_produto)
+
+    print(Fore.GREEN + f"\n✅ Produto '{nome}' cadastrado com sucesso!")
 
     voltar_ao_menu_principal()
-
 
 def estoque_excluir_produto():
+    exibir_subtitulo("Excluir Produto")
 
-    exibir_subtitulo("exclusao de produtos")
-
-    nome_produto = input("digite o nome do produto que deseja excluir: ")
+    nome = input("Nome do produto: ")
 
     for produto in lista_dicionarios:
-
-        if produto["nome_produto"].lower() == nome_produto.lower():
-
+        if produto["nome_produto"].lower() == nome.lower():
             lista_dicionarios.remove(produto)
+            print(Fore.GREEN + "Produto removido com sucesso!")
+            return voltar_ao_menu_principal()
 
-            print(f"o produto {nome_produto} foi removido com sucesso")
-
-            voltar_ao_menu_principal()
-
-            return
-
-    print("produto nao encontrado")
-
+    print(Fore.RED + "Produto não encontrado!")
     voltar_ao_menu_principal()
-
 
 def listar_produtos():
-
-    exibir_subtitulo("produtos em estoque")
+    exibir_subtitulo("Produtos em Estoque")
 
     if not lista_dicionarios:
-
-        print("nenhum produto cadastrado")
-
-        voltar_ao_menu_principal()
-
-        return
+        print(Fore.YELLOW + "Nenhum produto cadastrado.")
+        return voltar_ao_menu_principal()
 
     for produto in lista_dicionarios:
-
-        print(f"produto: {produto['nome_produto']}")
-        print(f"codigo: {produto['cod_produto']}")
-        print(f"tipo: {produto['tipo']}")
-        print(f"quantidade em estoque: {produto['quantidade_estoque']}")
-        print(f"preco: {produto['preco']}")
-        print("-" * 30)
+        print(Fore.BLUE + "-" * 40)
+        print(Fore.WHITE + f"📦 {produto['nome_produto']}")
+        print(f"Código: {produto['cod_produto']}")
+        print(f"Tipo: {produto['tipo']}")
+        print(f"Estoque: {produto['quantidade_estoque']}")
+        print(f"Preço: R$ {produto['preco']}")
 
     voltar_ao_menu_principal()
-
 
 def estoque_atualizar():
+    exibir_subtitulo("Atualizar Estoque")
 
-    exibir_subtitulo("atualizacao do numero de produtos em estoque")
-
-    nome_produto = input("digite o nome do produto que voce quer atualizar o estoque: ")
+    nome = input("Produto: ")
 
     for produto in lista_dicionarios:
+        if produto["nome_produto"].lower() == nome.lower():
+            nova_qtd = input("Nova quantidade: ")
+            produto["quantidade_estoque"] = nova_qtd
+            print(Fore.GREEN + "Estoque atualizado!")
+            return voltar_ao_menu_principal()
 
-        if produto["nome_produto"].lower() == nome_produto.lower():
-
-            nova_quantidade = input("digite a nova quantidade em estoque: ")
-
-            produto["quantidade_estoque"] = nova_quantidade
-
-            print(f"o estoque do produto {nome_produto} foi atualizado para {nova_quantidade}")
-
+    print(Fore.RED + "Produto não encontrado!")
     voltar_ao_menu_principal()
 
-
 def estoque_alerta():
+    exibir_subtitulo("Alerta de Estoque (< 50)")
 
-    exibir_subtitulo("produtos com estoque abaixo de 50 unidades")
-
-    encontrou_produto = False
+    encontrou = False
 
     for produto in lista_dicionarios:
-
         if int(produto["quantidade_estoque"]) < 50:
+            print(Fore.RED + f"{produto['nome_produto']} - {produto['quantidade_estoque']}")
+            encontrou = True
 
-            print(f"{produto['nome_produto']} - estoque: {produto['quantidade_estoque']}")
-
-            encontrou_produto = True
-
-    if not encontrou_produto:
-
-        print("nenhum produto com estoque baixo")
+    if not encontrou:
+        print(Fore.GREEN + "Nenhum produto com estoque baixo!")
 
     voltar_ao_menu_principal()
